@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.get('/users', db.getUsers)
+app.get('/answertable', db.getAnswertable)
 app.get('/users/:id', db.getUserById)
 app.post('/users', db.createUser)
 app.put('/users/:id', db.updateUser)

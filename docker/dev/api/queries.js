@@ -1,13 +1,13 @@
 const Pool = require('pg').Pool
 const pool = new Pool({
   user: 'postgres',
-  host: 'localhost',
+  host: '172.24.0.4',
   database: 'boca-db',
   password: 'superpass',
-  port: 5432,
+  port: 42460,
 })
-const getUsers = (request, response) => {
-  pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
+const getAnswertable = (request, response) => {
+  pool.query('SELECT * FROM answertable ', (error, results) => {
     if (error) {
       throw error
     }
@@ -65,7 +65,7 @@ const deleteUser = (request, response) => {
 }
 
 module.exports = {
-  getUsers,
+  getAnswertable,
   getUserById,
   createUser,
   updateUser,
