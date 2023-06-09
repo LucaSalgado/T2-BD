@@ -6,3 +6,4 @@ src/private/runslog
 src/private/runtmp
 src/private/scoretmp
 .DS_Store
+docker/dev/api/node_modules
