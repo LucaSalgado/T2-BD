@@ -1,73 +1,24 @@
 const Pool = require('pg').Pool
+
 const pool = new Pool({
   user: 'postgres',
-  host: '172.24.0.4',
-  database: 'boca-db',
+  host: 'boca-db',
+  database: 'bocadb',
   password: 'superpass',
-  port: 42460,
-})
-const getAnswertable = (request, response) => {
-  pool.query('SELECT * FROM answertable ', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
+  port: 5432,
+}); // Configurando o cliente da API para se conectar ao postgres
 
-const getUserById = (request, response) => {
-  const id = parseInt(request.params.id)
-
-  pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-const createUser = (request, response) => {
-  const { name, email } = request.body
-
-  pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(201).send(`User added with ID: ${results.insertId}`)
-  })
-}
-
-const updateUser = (request, response) => {
-  const id = parseInt(request.params.id)
-  const { name, email } = request.body
-
-  pool.query(
-    'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id],
-    (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).send(`User modified with ID: ${id}`)
-    }
-  )
-}
-
-const deleteUser = (request, response) => {
-  const id = parseInt(request.params.id)
-
-  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).send(`User deleted with ID: ${id}`)
-  })
+const getTest = async (req, res) => {
+  try {
+    const result = await pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'");
+    console.log(result);
+    res.status(200).send(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao executar a consulta.');
+  }
 }
 
 module.exports = {
-  getAnswertable,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
+  getTest
 }

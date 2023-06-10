@@ -65,5 +65,6 @@
         {
             "template": "docker compose -f docker-compose.yml ${configurationFile} down"
         }
-    ]
+    ],
+    "editor.fontFamily": "JetBrainsMono NF"
 }
