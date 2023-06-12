@@ -152,14 +152,19 @@ const getUserTable = async (req, res) => {
 }
 
 const getByTag = async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM usertable");
-    console.log(result);
-    res.status(200).send(result.rows);
-  } catch (error) {
+  //try {
+    const {contestId, entityType, entityId} = req.params;
+    const tagId = req.query.tagId
+    const tagName = req.query.tagName
+    const tagValue = req.query.tagValue
+   // const result = await pool.query("SELECT * FROM usertable");
+    console.log(contestId, entityType, entityId, tagId, tagName, tagValue);
+    res.status(200).send()
+   // res.status(200).send(result.rows);
+  /*} catch (error) {
     console.error(error);
     res.status(500).send('Erro ao executar a consulta.');
-  }
+  }*/
 }
 
 module.exports = {
@@ -174,5 +179,6 @@ module.exports = {
   getSiteTable,
   getSiteTimeTable,
   getTaskTable,
-  getUserTable
+  getUserTable,
+  getByTag
 }
