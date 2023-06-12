@@ -13,7 +13,18 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.get('/test', db.getTest)
+app.get('/answertable', db.getAnswerTable)
+app.get('/bkptable', db.getBkpTable)
+app.get('/clartable', db.getClarTable)
+app.get('/contesttable', db.getContestTable)
+app.get('/langtable', db.getLangTable)
+app.get('/logtable', db.getLogTable)
+app.get('/problemtable', db.getProblemTable)
+app.get('/runtable', db.getRunTable)
+app.get('/sitetable', db.getSiteTable)
+app.get('/sitetimetable', db.getSiteTimeTable)
+app.get('/tasktable', db.getTaskTable)
+app.get('/usertable', db.getUserTable)
 
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
