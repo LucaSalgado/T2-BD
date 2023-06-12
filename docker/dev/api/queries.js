@@ -151,6 +151,17 @@ const getUserTable = async (req, res) => {
   }
 }
 
+const getByTag = async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM usertable");
+    console.log(result);
+    res.status(200).send(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao executar a consulta.');
+  }
+}
+
 module.exports = {
   getAnswerTable,
   getBkpTable,
