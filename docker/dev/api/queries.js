@@ -161,7 +161,7 @@ const getByTag = async (req, res) => {
     const tagId = req.query.tagId
     const tagName = req.query.tagName
     const tagValue = req.query.tagValue
-    const result = await pool.query("SELECT * FROM usertable");
+    const result = await pool.query(`SELECT * FROM contesttable WHERE contestnumber = ${contestId}`);
     res.status(200).send(result.rows);
   } catch (error) {
     console.error(error);
