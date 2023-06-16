@@ -26,7 +26,11 @@ app.get('/sitetable', db.getSiteTable)
 //app.get('/sitetimetable', db.getSiteTimeTable)
 //app.get('/tasktable', db.getTaskTable)
 app.get('/usertable', db.getUserTable)
-app.get('/tag/api/contest/:contestId/tags/:entityType/:entityId', db.getByTag)
+//app.get('/tag/api/contest/:contestId/tags/:entityType/:entityId', db.getUserTable)
+//app.get('/tag/api/contest/:contestId/tags/:entityType([^/]+/[^/]+)/:entityId', db.getByTag)
+
+app.get('/tag/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+|[^/]+)/:entityId', db.getByTag);
+
 
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);

@@ -155,19 +155,44 @@ const getByTag = async (req, res) => {
   try {
     const {contestId, entityType, entityId} = req.params;
     // Checa se o entityType é valido
-    if (!["problem", "language", "site", "site"].includes(entityType)) {
+    if (!["problem", "language", "site", "site/user"].includes(entityType)) {
       throw new Error();
     }
-
-    let query = (`SELECT * FROM problemtable NATURAL JOIN problemtagstable WHERE contestnumber = ${contestId} AND problemnumber = ${entityId}`);
+    
+    let tables = {
+      table: "",
+      type: ""
+    };
+    
+    switch (entityType) {
+      case "problem":
+        tables.table = "problemtable";
+        tables.type = `AND problemnumber = ${entityId}`;
+        break;
+      case "language":
+        tables.table = "langtable"
+        tables.type = `AND langnumber = ${entityId}`;
+        break;
+      case "site":
+        tables.table = "sitetable"
+        tables.type = `AND sitenumber = ${entityId}`;
+        break;
+      case "site/user":
+        tables.table = "usertable"
+        tables.type = `AND usersitenumber = ${entityId}`;
+        break;
+    }
+    
     const tagId = req.query.tagId
     const tagName = req.query.tagName
     const tagValue = req.query.tagValue
 
+    let query = (`SELECT * FROM ${tables.table} NATURAL JOIN tagstable WHERE contestnumber = ${contestId} ${tables.type}`);
+
     if(tagId) {query.concat(`AND tagid = ${tagId}`)};
     if(tagName) {query.concat(`AND tagname = ${tagName}`)};
     if(tagValue) {query.concat(`AND tagvalue = ${tagValue}`)};
-    
+
     const result = await pool.query(query);
     res.status(200).send(result.rows);
   } catch (error) {
