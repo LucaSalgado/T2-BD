@@ -14,21 +14,6 @@ app.get('/', (req, res) => {
 });
 
 // Exemplo de rota
-app.get('/api/contest/:contestId/tags/:entityType/:entityId', db.getAnswerTable)
-//app.get('/bkptable', db.getBkpTable)
-//app.get('/clartable', db.getClarTable)
-//app.get('/contesttable', db.getContestTable)
-app.get('/langtable', db.getLangTable)
-//app.get('/logtable', db.getLogTable)
-app.get('/problemtable', db.getProblemTable)
-//app.get('/runtable', db.getRunTable)
-app.get('/sitetable', db.getSiteTable)
-//app.get('/sitetimetable', db.getSiteTimeTable)
-//app.get('/tasktable', db.getTaskTable)
-app.get('/usertable', db.getUserTable)
-//app.get('/tag/api/contest/:contestId/tags/:entityType/:entityId', db.getUserTable)
-//app.get('/tag/api/contest/:contestId/tags/:entityType([^/]+/[^/]+)/:entityId', db.getByTag)
-
 app.get('/tag/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+|[^/]+)/:entityId', db.getByTag);
 
 
