@@ -17,3 +17,9 @@ COPY ./docker/dev/api/ /usr/src/app
 
 EXPOSE 8080
 CMD [ "node", "server.js" ]
+
+
+
+
+
+#COPY init.sql /docker-entrypoint-initdb.d/10-init.sql

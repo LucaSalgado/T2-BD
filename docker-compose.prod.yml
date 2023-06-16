@@ -79,9 +79,15 @@ services:
                 condition: on-failure
         volumes:
       # Solution to import all *.sql during initialization
-        - ./init/postgres:/boca-dump-bdcomp-anon.sql
+        - ./docker/dev/api/init/postgres:/docker-entrypoint-initdb.d
       # Solution for persitence using volumes (managed by Docker)
         - data_postgres:/var/lib/postgresql/data
 
 volumes:
     data_postgres:
+
+
+    #volumes:
+    #    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    #./init/postgres:/docker-entrypoint-initdb.d

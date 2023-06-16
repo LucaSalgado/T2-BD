@@ -158,10 +158,17 @@ const getByTag = async (req, res) => {
     if (!["problem", "language", "site", "site"].includes(entityType)) {
       throw new Error();
     }
+
+    let query = (`SELECT * FROM problemtable NATURAL JOIN problemtagstable WHERE contestnumber = ${contestId} AND problemnumber = ${entityId}`);
     const tagId = req.query.tagId
     const tagName = req.query.tagName
     const tagValue = req.query.tagValue
-    const result = await pool.query(`SELECT * FROM contesttable WHERE contestnumber = ${contestId}`);
+
+    if(tagId) {query.concat(`AND tagid = ${tagId}`)};
+    if(tagName) {query.concat(`AND tagname = ${tagName}`)};
+    if(tagValue) {query.concat(`AND tagvalue = ${tagValue}`)};
+    
+    const result = await pool.query(query);
     res.status(200).send(result.rows);
   } catch (error) {
     console.error(error);
