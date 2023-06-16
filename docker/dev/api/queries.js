@@ -189,9 +189,9 @@ const getByTag = async (req, res) => {
 
     let query = (`SELECT * FROM ${tables.table} NATURAL JOIN tagstable WHERE contestnumber = ${contestId} ${tables.type}`);
 
-    if(tagId) {query.concat(`AND tagid = ${tagId}`)};
-    if(tagName) {query.concat(`AND tagname = ${tagName}`)};
-    if(tagValue) {query.concat(`AND tagvalue = ${tagValue}`)};
+    if(tagId) {query = query + ` AND tagid = ${tagId}`};
+    if(tagName) {query = query + ` AND tagname = '${tagName}'`};
+    if(tagValue) {query = query + ` AND tagvalue = '${tagValue}'`};
 
     const result = await pool.query(query);
     res.status(200).send(result.rows);
