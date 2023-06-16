@@ -59,17 +59,5 @@ const getByTag = async (req, res) => {
 }
 
 module.exports = {
-  getAnswerTable,
-  getBkpTable,
-  getClarTable,
-  getContestTable,
-  getLangTable,
-  getLogTable,
-  getProblemTable,
-  getRunTable,
-  getSiteTable,
-  getSiteTimeTable,
-  getTaskTable,
-  getUserTable,
   getByTag
 }
