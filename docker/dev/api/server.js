@@ -17,6 +17,10 @@ app.get('/', (req, res) => {
 app.get('/tag/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+|[^/]+)/:entityId', db.getByTag);
 
 
+app.use(express.json());
+app.post('/tag/api/contest/:contestId/tags', db.postByTag);
+
+
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
 });

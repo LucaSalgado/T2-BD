@@ -2,14 +2,14 @@
 
 DROP TABLE IF EXISTS "tagstable" CASCADE;
 CREATE TABLE "public"."tagstable" (
-    "problemnumber" integer NOT NULL,
+    "entityid" varchar(50) NOT NULL,
     "tagid" integer NOT NULL,
-    "tagname" character varying(50) NOT NULL,
-    "tagvalue" character varying(50) NOT NULL,
-    CONSTRAINT "problemtags_pkey" PRIMARY KEY ("problemnumber", "tagid")
+    "tagname" varchar(50) NOT NULL,
+    "tagvalue" varchar(50) NOT NULL,
+    CONSTRAINT "entitytags_pkey" PRIMARY KEY ("entityid", "tagid")
 ) WITH (oids = false);
 
-INSERT INTO "tagstable" ("problemnumber", "tagid", "tagname", "tagvalue") VALUES
-(2004, 1,	'level',    'easy'),
-(2006, 1,	'lang',     'relax'),
-(2004, 2,   'lang',     'mysql');
+INSERT INTO "tagstable" ("entityid", "tagid", "tagname", "tagvalue") VALUES
+('2004', 1,	'level',    'easy'),
+('2006', 1,	'lang',     'relax'),
+('2004', 2,   'lang',     'mysql');

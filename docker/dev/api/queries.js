@@ -79,6 +79,7 @@ const getByTag = async (req, res) => {
   }
 }
 
+
 /*   try {
     const {contestId, entityType, entityId} = req.params;
 
@@ -130,6 +131,81 @@ const getByTag = async (req, res) => {
   }
   */
 
+const postByTag = async (req, res) => {
+  // Extract headers and file data from the request
+  const body = req.body;
+
+  // Handle the extracted data
+  console.log(typeof(body));
+  console.log('body', body);
+  console.log('tags', body.entityTag[0].tag);
+ /* console.log(req);
+  const body = JSON.parse(req.body);
+  console.log(body);*/
+
+
+
+
+  try {
+    let contest = await pool.query(`SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`);
+    if(contest.rowCount == 0){
+      res.status(404).send("Not Found: O ID da competição ou da entidade especificado na requisição não existe.");
+    }
+
+    else {
+      body.entityTag.forEach(entity => {
+        if (!["problem", "language", "site", "site/user"].includes(entity.entityType)) {
+          res.status(400).send("Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido.");
+        }
+
+        else {
+          entity.tag.forEach(async tag => {       
+            console.log(`INSERT INTO tagstable VALUES('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT ('${entity.entityId}', ${tag.id}) DO NOTHING`);   
+            const result = await pool.query(`INSERT INTO tagstable (entityid, tagid, tagname, tagvalue) VALUES ('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT (entityid, tagid) DO NOTHING;`);
+          }
+          );
+        }
+      }
+      );
+      res.status(200).send();
+    }
+  } catch (error) {
+    res.status(500).send('Não foi possível acessar o banco de dados, verifique a sua rota.');
+  }
+}
+
+const putByTag = async (req, res) => {
+  try {
+    let contest = await pool.query(`SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`);
+    if(contest.rowCount == 0){
+      res.status(404).send("Not Found: O ID da competição ou da entidade especificado na requisição não existe.");
+    }
+
+    else {
+      body.entityTag.forEach(entity => {
+        if (!["problem", "language", "site", "site/user"].includes(entity.entityType)) {
+          res.status(400).send("Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido.");
+        }
+
+        else {
+          entity.tag.forEach(async tag => {          
+            const result = await pool.query(`UPDATE tagstable SET tagname = '${tag.name}', tagvalue = '${tag.value}' WHERE problemnumber = '${entity.entityId}' AND tagid = ${tag.id} `);
+            res.status(200).send(result.rows);
+          }
+          );
+        }
+      }
+      );
+    }
+  } catch (error) {
+    res.status(500).send('Não foi possível acessar o banco de dados, verifique a sua rota.');
+  }
+
+
+}
+
 module.exports = {
-  getByTag
+  getByTag,
+  postByTag,
+  putByTag
 }
