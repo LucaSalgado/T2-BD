@@ -19,6 +19,7 @@ app.get('/tag/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+
 
 app.use(express.json());
 app.post('/tag/api/contest/:contestId/tags', db.postByTag);
+app.put('/tag/api/contest/:contestId/tags', db.putByTag);
 
 
 app.listen(PORT, HOST, () => {
