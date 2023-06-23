@@ -132,19 +132,7 @@ const getByTag = async (req, res) => {
   */
 
 const postByTag = async (req, res) => {
-  // Extract headers and file data from the request
   const body = req.body;
-
-  // Handle the extracted data
-  console.log(typeof(body));
-  console.log('body', body);
-  console.log('tags', body.entityTag[0].tag);
- /* console.log(req);
-  const body = JSON.parse(req.body);
-  console.log(body);*/
-
-
-
 
   try {
     let contest = await pool.query(`SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`);
@@ -160,15 +148,14 @@ const postByTag = async (req, res) => {
 
         else {
           entity.tag.forEach(async tag => {       
-            console.log(`INSERT INTO tagstable VALUES('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT ('${entity.entityId}', ${tag.id}) DO NOTHING`);   
             const result = await pool.query(`INSERT INTO tagstable (entityid, tagid, tagname, tagvalue) VALUES ('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT (entityid, tagid) DO NOTHING;`);
           }
           );
         }
       }
       );
-      res.status(204).send("Sucess: tag(s) atualizad(s).");
     }
+    res.status(204).send("Sucess: tag(s) atualizad(s).");
   } catch (error) {
     res.status(500).send('Não foi possível acessar o banco de dados, verifique a sua rota.');
   }
@@ -180,7 +167,6 @@ const putByTag = async (req, res) => {
     let contest = await pool.query(`SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`);
     if(contest.rowCount == 0){
       res.status(404).send("Not Found: O ID da competição ou da entidade especificado na requisição não existe.");
-      console.log('estou put');
     }
 
     else {
