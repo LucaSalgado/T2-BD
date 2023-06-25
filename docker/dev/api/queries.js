@@ -8,6 +8,8 @@ const pool = new Pool({
   port: 5432,
 }); // Configurando o cliente da API para se conectar ao postgres
 
+entityTypes = ["problem", "language", "site", "site/user"];
+
 const getByTag = async (req, res) => {
   try {
     let contest = await pool.query(
@@ -23,7 +25,7 @@ const getByTag = async (req, res) => {
       const { contestId, entityType, entityId } = req.params;
 
       // Checa se o entityType é valido
-      if (!["problem", "language", "site", "site/user"].includes(entityType)) {
+      if (!entityTypes.includes(entityType)) {
         res
           .status(400)
           .send(
@@ -102,57 +104,6 @@ const getByTag = async (req, res) => {
   }
 };
 
-/*   try {
-    const {contestId, entityType, entityId} = req.params;
-
-    // Checa se o entityType é valido
-    if (!["problem", "language", "site", "site/user"].includes(entityType)) {
-      res.status(400).send("Bad Request: Pelo menos um dos parâmetros fornecidos na requisição é inválido");
-    }
-    
-    let tables = {
-      table: "",
-      type: ""
-    };
-    
-    switch (entityType) {
-      case "problem":
-        tables.table = "problemtable";
-        tables.type = `AND problemnumber = ${entityId}`;
-        break;
-      case "language":
-        tables.table = "langtable"
-        tables.type = `AND langnumber = ${entityId}`;
-        break;
-      case "site":
-        tables.table = "sitetable"
-        tables.type = `AND sitenumber = ${entityId}`;
-        break;
-      case "site/user":
-        tables.table = "usertable"
-        tables.type = `AND usersitenumber = ${entityId}`;
-        break;
-    }
-    
-    const tagId = req.query.tagId
-    const tagName = req.query.tagName
-    const tagValue = req.query.tagValue
-
-    
-    let query = (`SELECT * FROM ${tables.table} NATURAL JOIN tagstable WHERE contestnumber = ${contestId} ${tables.type}`);
-
-    if(tagId) {query = query + ` AND tagid = ${tagId}`};
-    if(tagName) {query = query + ` AND tagname = '${tagName}'`};
-    if(tagValue) {query = query + ` AND tagvalue = '${tagValue}'`};
-
-    const result = await pool.query(query);
-    res.status(200).send(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Não foi possível acessar o banco de dados, verifique a sua rota.');
-  }
-  */
-
 const postByTag = async (req, res) => {
   const body = req.body;
 
@@ -169,7 +120,7 @@ const postByTag = async (req, res) => {
     } else {
       body.entityTag.forEach((entity) => {
         if (
-          !["problem", "language", "site", "site/user"].includes(
+          !entityTypes.includes(
             entity.entityType
           )
         ) {
@@ -210,7 +161,7 @@ const putByTag = async (req, res) => {
     } else {
       body.entityTag.forEach((entity) => {
         if (
-          !["problem", "language", "site", "site/user"].includes(
+          !entityTypes.includes(
             entity.entityType
           )
         ) {
@@ -251,7 +202,7 @@ const deleteByTag = async (req, res) => {
     } else {
       body.entityTag.forEach((entity) => {
         if (
-          !["problem", "language", "site", "site/user"].includes(
+          !entityTypes.includes(
             entity.entityType
           )
         ) {
