@@ -33,6 +33,7 @@ const getByTag = async (req, res) => {
           );
       } else {
         let tables = {
+          select: "",
           table: "",
           type: "",
         };
@@ -41,31 +42,39 @@ const getByTag = async (req, res) => {
         switch (entityType) {
           case "problem":
             tables.table = "problemtable";
+            tables.select =
+              "contestnumber, entityid, problemnumber, tagid, tagname, tagvalue";
             contest = await pool.query(
               `SELECT problemnumber FROM problemtable WHERE EXISTS (SELECT problemnumber FROM problemtable WHERE problemnumber = ${entityId})`
             );
-            tables.type = `AND problemnumber = ${entityId}`;
+            tables.type = `AND problemnumber = ${entityId} AND CAST(problemnumber AS varchar) = entityid`;
             break;
           case "language":
             tables.table = "langtable";
+            tables.select =
+              "contestnumber, entityid, langnumber, tagid, tagname, tagvalue";
             contest = await pool.query(
               `SELECT langnumber FROM langtable WHERE EXISTS (SELECT langnumber FROM langtable WHERE langnumber = ${entityId})`
             );
-            tables.type = `AND langnumber = ${entityId}`;
+            tables.type = `AND langnumber = ${entityId} AND CAST(langnumber AS varchar) = entityid`;
             break;
           case "site":
             tables.table = "sitetable";
+            tables.select =
+              "contestnumber, entityid, sitenumber, tagid, tagname, tagvalue";
             contest = await pool.query(
               `SELECT sitenumber FROM sitetable WHERE EXISTS (SELECT sitenumber FROM sitetable WHERE sitenumber = ${entityId})`
             );
-            tables.type = `AND sitenumber = ${entityId}`;
+            tables.type = `AND sitenumber = ${entityId} AND CAST(sitenumber AS varchar) = entityid`;
             break;
           case "site/user":
             tables.table = "usertable";
+            tables.select =
+              "contestnumber, entityid, usersitenumber, tagid, tagname, tagvalue";
             contest = await pool.query(
               `SELECT usersitenumber FROM usertable WHERE EXISTS (SELECT usersitenumber FROM usertable WHERE usersitenumber = ${entityId})`
             );
-            tables.type = `AND usersitenumber = ${entityId}`;
+            tables.type = `AND usersitenumber = ${entityId} AND CAST(usersitenumber AS varchar) = entityid`;
             break;
         }
 
@@ -80,7 +89,7 @@ const getByTag = async (req, res) => {
           const tagName = req.query.tagName;
           const tagValue = req.query.tagValue;
 
-          let query = `SELECT * FROM ${tables.table} NATURAL JOIN tagstable WHERE contestnumber = ${contestId} ${tables.type}`;
+          let query = `SELECT ${tables.select} FROM ${tables.table} NATURAL JOIN tagstable WHERE contestnumber = ${contestId} ${tables.type}`;
 
           if (tagId) {
             query = query + ` AND tagid = ${tagId}`;
@@ -93,7 +102,12 @@ const getByTag = async (req, res) => {
           }
 
           const result = await pool.query(query);
-          res.status(200).send(result.rows);
+          if (result.rowCount > 0) {
+            resultado = trataMensagem(result.rows, entityType, entityId);
+            res.status(200).json(resultado);
+          } else {
+            res.status(204).send("Não foram encontrados tags da entidade!");
+          }
         }
       }
     }
@@ -103,6 +117,25 @@ const getByTag = async (req, res) => {
       .send("Não foi possível acessar o banco de dados, verifique a sua rota.");
   }
 };
+
+function trataMensagem(result, entityType, entityId) {
+  const entityTag = {
+    entityType: entityType,
+    entityId: entityId,
+    tag: result.map((tagItem) => ({
+      id: tagItem.tagid,
+      name: tagItem.tagname,
+      value: tagItem.tagvalue,
+    })),
+  };
+
+  const mensagem = {
+    message: "Success: tag(s) encontrada(s).",
+    entityTag: entityTag,
+  };
+
+  return mensagem;
+}
 
 const postByTag = async (req, res) => {
   const body = req.body;
@@ -115,15 +148,11 @@ const postByTag = async (req, res) => {
       res
         .status(404)
         .send(
-          "Not Found: O ID da competição ou da entidade especificado na requisição não existe."
+          "Not Found: O ID da competição especificado na requisição não existe."
         );
     } else {
       body.entityTag.forEach((entity) => {
-        if (
-          !entityTypes.includes(
-            entity.entityType
-          )
-        ) {
+        if (!entityTypes.includes(entity.entityType)) {
           res
             .status(400)
             .send(
@@ -156,15 +185,11 @@ const putByTag = async (req, res) => {
       res
         .status(404)
         .send(
-          "Not Found: O ID da competição ou da entidade especificado na requisição não existe."
+          "Not Found: O ID da competição especificado na requisição não existe."
         );
     } else {
       body.entityTag.forEach((entity) => {
-        if (
-          !entityTypes.includes(
-            entity.entityType
-          )
-        ) {
+        if (!entityTypes.includes(entity.entityType)) {
           res
             .status(400)
             .send(
@@ -197,15 +222,11 @@ const deleteByTag = async (req, res) => {
       res
         .status(404)
         .send(
-          "Not Found: O ID da competição ou da entidade especificado na requisição não existe."
+          "Not Found: O ID da competição especificado na requisição não existe."
         );
     } else {
       body.entityTag.forEach((entity) => {
-        if (
-          !entityTypes.includes(
-            entity.entityType
-          )
-        ) {
+        if (!entityTypes.includes(entity.entityType)) {
           res
             .status(400)
             .send(
