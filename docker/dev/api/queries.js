@@ -140,44 +140,6 @@ function trataMensagem(result, entityType, entityId) {
   return mensagem;
 }
 
-/* const postByTag = async (req, res) => {
-  const body = req.body;
-
-  try {
-    let contest = await pool.query(
-      `SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`
-    );
-    if (contest.rowCount == 0) {
-      res
-        .status(404)
-        .send(
-          "Not Found: O ID da competição especificado na requisição não existe."
-        );
-    } else {
-      body.entityTag.forEach((entity) => {
-        if (!entityTypes.includes(entity.entityType)) {
-          res
-            .status(400)
-            .send(
-              "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
-            );
-        } else {
-          entity.tag.forEach(async (tag) => {
-            const result = await pool.query(
-              `INSERT INTO tagstable (entityid, tagid, tagname, tagvalue) VALUES ('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT (entityid, tagid) DO NOTHING;`
-            );
-          });
-        }
-      });
-    }
-    res.status(204).send("Sucess: tag(s) atualizad(s).");
-  } catch (error) {
-    res
-      .status(500)
-      .send("Não foi possível acessar o banco de dados, verifique a sua rota.");
-  }
-}; */
-
 const postByTag = async (req, res) => {
   const body = req.body;
   try {
@@ -245,7 +207,6 @@ const postByTag = async (req, res) => {
     console.log(error);
   }
 
-  console.log(entityIdErros);
   if (entityIdErros.length > 0) {
     res.status(207).send({
       message:
@@ -262,38 +223,55 @@ const postByTag = async (req, res) => {
 const putByTag = async (req, res) => {
   const body = req.body;
   try {
-    let contest = await pool.query(
+    await pool.query(
       `SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`
     );
-    if (contest.rowCount == 0) {
-      res
-        .status(404)
-        .send(
-          "Not Found: O ID da competição especificado na requisição não existe."
-        );
-    } else {
-      body.entityTag.forEach((entity) => {
-        if (!entityTypes.includes(entity.entityType)) {
-          res
-            .status(400)
-            .send(
-              "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
-            );
-        } else {
-          entity.tag.forEach(async (tag) => {
-            const result = await pool.query(
-              `UPDATE tagstable SET tagname = '${tag.name}', tagvalue = '${tag.value}' WHERE entityid = '${entity.entityId}' AND tagid = ${tag.id} `
-            );
-          });
-        }
-      });
-      res.status(204).send("Sucess: tag(s) atualizad(s).");
-    }
   } catch (error) {
     res
-      .status(500)
-      .send("Não foi possível acessar o banco de dados, verifique a sua rota.");
+      .status(404)
+      .send(
+        "Not Found: O ID da competição especificado na requisição não existe."
+      );
   }
+
+  try {
+    body.entityTag.forEach((entity) => {
+      if (!entityTypes.includes(entity.entityType)) {
+      }
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .send(
+        "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
+      );
+  }
+
+  entityIdErros = [];
+  for (const entity of body.entityTag) {
+    for (const tag of entity.tag) {
+      const result = await pool.query(
+        `UPDATE tagstable SET tagname = '${tag.name}', tagvalue = '${tag.value}' WHERE entityid = '${entity.entityId}' AND tagid = ${tag.id}`
+      );
+      if (result.rowCount === 0) {
+        entityIdErros.push(
+          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrato e portanto não pode ser atualizada`
+        );
+      }
+    }
+  }
+
+  if (entityIdErros.length > 0) {
+    res.status(207).send({
+      message:
+        "Multi-Status: Algumas Tags foram atualizadas, porem alguns erros ocorreram",
+      errors: entityIdErros,
+    });
+  } else {
+    res.status(204).send("Sucess: tag(s) atualizad(s).");
+  }
+
+  entityIdErros = [];
 };
 
 const deleteByTag = async (req, res) => {
