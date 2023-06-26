@@ -10,6 +10,9 @@ const HOST = '0.0.0.0';
 
 // App
 app.use(express.json());
+app.get('/', (req, res) => {
+  res.status(200).send("API funcionando!");
+})
 
 
 // Rotas
