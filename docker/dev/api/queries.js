@@ -221,14 +221,14 @@ const postByTag = async (req, res) => {
   if (entityIdErros.length > 0 && sucesso == true) {
     res.status(207).send({
       message:
-        "Multi-Status: Algumas Tags foram incluidas, porem alguns erros ocorreram",
+        "Multi-Status: Algumas Tags foram incluidas, porém alguns erros ocorreram",
       errors: entityIdErros,
     });
   } else if (sucesso == false) {
     res
       .status(422)
       .send(
-        "Unprocessable Entity: Todas os entityId enviados não foram encontradas e por tanto elas podem não estar presentes no banco de dados ou as entityId buscadas apresentam erro."
+        "Unprocessable Entity: Todas as entityId enviadas não foram encontradas e portanto elas podem não estar presentes no banco de dados ou as entityId buscadas apresentam erro."
       );
   } else {
     res.status(204).send("Sucess: tag(s) atualizad(s).");
@@ -263,7 +263,7 @@ const putByTag = async (req, res) => {
       );
       if (result.rowCount === 0) {
         entityIdErros.push(
-          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrato e portanto não pode ser atualizada`
+          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrada e portanto não pode ser atualizada`
         );
       } else {
         sucesso = true;
@@ -274,14 +274,14 @@ const putByTag = async (req, res) => {
   if (entityIdErros.length > 0 && sucesso == true) {
     res.status(207).send({
       message:
-        "Multi-Status: Algumas Tags foram atualizadas, porem alguns erros ocorreram",
+        "Multi-Status: Algumas Tags foram atualizadas, porém alguns erros ocorreram",
       errors: entityIdErros,
     });
   } else if (sucesso == false) {
     res
       .status(422)
       .send(
-        "Unprocessable Entity: Todas os entityId enviados não foram encontradas e por tanto elas podem não estar presentes no banco de dados ou as entityId buscadas apresentam erro."
+        "Unprocessable Entity: Todas as entityId enviados não foram encontradas e portanto elas podem não estar presentes no banco de dados ou as entityId buscadas apresentam erro."
       );
   } else {
     res.status(204).send("Sucess: tag(s) atualizad(s).");
@@ -315,7 +315,7 @@ const deleteByTag = async (req, res) => {
       );
       if (deleteResult.rowCount === 0) {
         entityIdErros.push(
-          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrato e portanto não pode ser deletado.`
+          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrada e portanto não pode ser deletada.`
         );
       } else {
         sucesso = true;
@@ -326,14 +326,14 @@ const deleteByTag = async (req, res) => {
   if (entityIdErros.length > 0 && sucesso == true) {
     res.status(207).send({
       message:
-        "Multi-Status: Algumas Tags foram deletadas, porem alguns erros ocorreram.",
+        "Multi-Status: Algumas Tags foram deletadas, porém alguns erros ocorreram.",
       errors: entityIdErros,
     });
   } else if (sucesso == false) {
     res
       .status(422)
       .send(
-        "Unprocessable Entity: Todas as tags enviadas não foram encontradas e por tanto elas podem não estar presentes no banco de dados ou as tags buscadas apresentam erro."
+        "Unprocessable Entity: Todas as tags enviadas não foram encontradas e portanto elas podem não estar presentes no banco de dados ou as tags buscadas apresentam erro."
       );
   } else {
     res.status(204).send("Sucess: tag(s) excluída(s).");
