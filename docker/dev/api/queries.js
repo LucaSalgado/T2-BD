@@ -12,6 +12,7 @@ entityTypes = ["problem", "language", "site", "site/user"];
 entityNumbers = ["problemnumber", "langnumber", "sitenumber", "usersitenumber"];
 entityTables = ["problemtable", "langtable", "sitetable", "usertable"];
 entityIdErros = [];
+sucesso = false;
 
 const getByTag = async (req, res) => {
   try {
@@ -154,17 +155,16 @@ const postByTag = async (req, res) => {
       );
   }
 
-  try {
-    body.entityTag.forEach((entity) => {
-      if (!entityTypes.includes(entity.entityType)) {
-      }
-    });
-  } catch (error) {
-    res
-      .status(400)
-      .send(
-        "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
-      );
+  for (const entity of body.entityTag) {
+    if (entityTypes.includes(entity.entityType)) {
+    } else {
+      res
+        .status(400)
+        .send(
+          "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
+        );
+      return;
+    }
   }
 
   try {
@@ -234,17 +234,16 @@ const putByTag = async (req, res) => {
       );
   }
 
-  try {
-    body.entityTag.forEach((entity) => {
-      if (!entityTypes.includes(entity.entityType)) {
-      }
-    });
-  } catch (error) {
-    res
-      .status(400)
-      .send(
-        "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
-      );
+  for (const entity of body.entityTag) {
+    if (entityTypes.includes(entity.entityType)) {
+    } else {
+      res
+        .status(400)
+        .send(
+          "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
+        );
+      return;
+    }
   }
 
   entityIdErros = [];
@@ -257,16 +256,24 @@ const putByTag = async (req, res) => {
         entityIdErros.push(
           `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrato e portanto não pode ser atualizada`
         );
+      } else {
+        sucesso = true;
       }
     }
   }
 
-  if (entityIdErros.length > 0) {
+  if (entityIdErros.length > 0 && sucesso == true) {
     res.status(207).send({
       message:
         "Multi-Status: Algumas Tags foram atualizadas, porem alguns erros ocorreram",
       errors: entityIdErros,
     });
+  } else if (sucesso == false) {
+    res
+      .status(422)
+      .send(
+        "Unprocessable Entity: Todas as tags enviadas não foram encontradas e por tanto elas podem não estar presentes no banco de dados ou as tags buscadas apresentam erro."
+      );
   } else {
     res.status(204).send("Sucess: tag(s) atualizad(s).");
   }
@@ -277,38 +284,62 @@ const putByTag = async (req, res) => {
 const deleteByTag = async (req, res) => {
   const body = req.body;
   try {
-    let contest = await pool.query(
+    await pool.query(
       `SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`
     );
-    if (contest.rowCount == 0) {
-      res
-        .status(404)
-        .send(
-          "Not Found: O ID da competição especificado na requisição não existe."
-        );
-    } else {
-      body.entityTag.forEach((entity) => {
-        if (!entityTypes.includes(entity.entityType)) {
-          res
-            .status(400)
-            .send(
-              "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
-            );
-        } else {
-          entity.tag.forEach(async (tag) => {
-            const result = await pool.query(
-              `DELETE FROM tagstable WHERE tagname = '${tag.name}' AND tagvalue = '${tag.value}' AND entityid = '${entity.entityId}' AND tagid = ${tag.id} `
-            );
-          });
-        }
-      });
-      res.status(204).send("Sucess: tag(s) excluída(s).");
-    }
   } catch (error) {
     res
-      .status(500)
-      .send("Não foi possível acessar o banco de dados, verifique a sua rota.");
+      .status(404)
+      .send(
+        "Not Found: O ID da competição especificado na requisição não existe."
+      );
   }
+
+  for (const entity of body.entityTag) {
+    if (entityTypes.includes(entity.entityType)) {
+    } else {
+      res
+        .status(400)
+        .send(
+          "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
+        );
+      return;
+    }
+  }
+
+  entityIdErros = [];
+  for (const entity of body.entityTag) {
+    for (const tag of entity.tag) {
+      const deleteResult = await pool.query(
+        `DELETE FROM tagstable WHERE tagname = '${tag.name}' AND tagvalue = '${tag.value}' AND entityid = '${entity.entityId}' AND tagid = ${tag.id} `
+      );
+      if (deleteResult.rowCount === 0) {
+        entityIdErros.push(
+          `A tag de nome: ${tag.name}, valor: ${tag.value}, entityId: ${entity.entityId} e id:${tag.id}, não foi encontrato e portanto não pode ser deletado.`
+        );
+      } else {
+        sucesso = true;
+      }
+    }
+  }
+
+  if (entityIdErros.length > 0 && sucesso == true) {
+    res.status(207).send({
+      message:
+        "Multi-Status: Algumas Tags foram deletadas, porem alguns erros ocorreram.",
+      errors: entityIdErros,
+    });
+  } else if (sucesso == false) {
+    res
+      .status(422)
+      .send(
+        "Unprocessable Entity: Todas as tags enviadas não foram encontradas e por tanto elas podem não estar presentes no banco de dados ou as tags buscadas apresentam erro."
+      );
+  } else {
+    res.status(204).send("Sucess: tag(s) excluída(s).");
+  }
+
+  entityIdErros = [];
 };
 
 module.exports = {
