@@ -127,16 +127,17 @@ Certifique-se de ter um banco de dados PostgreSQL configurado corretamente com a
 ## Como Executar
 
 1.  Clone este repositório: `git clone https://github.com/LucaSalgado/T2-BD.git`
-2.  Execute o comando *start* do script `executar.sh` para iniciar:
+2.  Execute o comando ***limpar*** antes de executar qualquer comando do projeto para garantir que não haja volume existente e não seja criada a tabela **tagstable**.
+3.  Execute o comando *start* do script `executar.sh` para iniciar:
 	- `./executar.sh start` no linux
 	- `Bash executar.sh start` no windows powershell
-3.  Execute o comando *stop* do script `executar.sh` para parar:
+4.  Execute o comando *stop* do script `executar.sh` para parar:
 	- `./executar.sh stop` no linux
 	- `Bash executar.sh stop` no windows powershell
-4.  Execute o comando *limpar* do script `executar.sh` para remover os containers, imagens e volumes sem prune:
+5.  Execute o comando *limpar* do script `executar.sh` para remover os containers, imagens e volumes sem prune:
 	- `./executar.sh limpar` no linux
 	- `Bash executar.sh limpar` no windows powershell
-5.  Execute o comando *restart* do script `executar.sh` para parar a execução e iniciar novamente automaticamente:
+6.  Execute o comando *restart* do script `executar.sh` para parar a execução e iniciar novamente automaticamente:
 - `./executar.sh restart` no linux
 - `Bash executar.sh restart` no windows powershell
 > O comando *restart* é indicado para o uso durante o desenvolvimento, pois assim facilita na hora de atualizar a execução dos containers com as alterações feitas.

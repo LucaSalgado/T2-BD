@@ -15,4 +15,5 @@ elif [[ $1 == "limpar" ]]; then # Para limpar os containers, imagens e volumes s
     docker container prune -f
     docker image prune -f
     docker volume prune -f
+    docker volume rm $(docker volume ls -q)
 fi
