@@ -9,6 +9,9 @@ const pool = new Pool({
 }); // Configurando o cliente da API para se conectar ao postgres
 
 entityTypes = ["problem", "language", "site", "site/user"];
+entityNumbers = ["problemnumber", "langnumber", "sitenumber", "usersitenumber"];
+entityTables = ["problemtable", "langtable", "sitetable", "usertable"];
+entityIdErros = [];
 
 const getByTag = async (req, res) => {
   try {
@@ -137,7 +140,7 @@ function trataMensagem(result, entityType, entityId) {
   return mensagem;
 }
 
-const postByTag = async (req, res) => {
+/* const postByTag = async (req, res) => {
   const body = req.body;
 
   try {
@@ -173,6 +176,87 @@ const postByTag = async (req, res) => {
       .status(500)
       .send("Não foi possível acessar o banco de dados, verifique a sua rota.");
   }
+}; */
+
+const postByTag = async (req, res) => {
+  const body = req.body;
+  try {
+    await pool.query(
+      `SELECT contestnumber FROM contesttable WHERE EXISTS (SELECT contestnumber FROM contesttable WHERE contestnumber = ${req.params.contestId})`
+    );
+  } catch (error) {
+    res
+      .status(404)
+      .send(
+        "Not Found: O ID da competição especificado na requisição não existe."
+      );
+  }
+
+  try {
+    body.entityTag.forEach((entity) => {
+      if (!entityTypes.includes(entity.entityType)) {
+      }
+    });
+  } catch (error) {
+    res
+      .status(400)
+      .send(
+        "Bad Request: O ID da competição ou o JSON fornecido no corpo da requisição é inválido."
+      );
+  }
+
+  try {
+    for (const entity of body.entityTag) {
+      let result = undefined;
+      if (entity.entityType === "site/user") {
+        result = await pool.query(
+          `SELECT ${
+            entityNumbers[entityTypes.indexOf(entity.entityType)]
+          } FROM ${
+            entityTables[entityTypes.indexOf(entity.entityType)]
+          } WHERE usersitenumber = ${
+            entity.entityId.split("/")[0]
+          } AND usernumber = ${entity.entityId.split("/")[1]}`
+        );
+      } else {
+        result = await pool.query(
+          `SELECT ${
+            entityNumbers[entityTypes.indexOf(entity.entityType)]
+          } FROM ${
+            entityTables[entityTypes.indexOf(entity.entityType)]
+          } WHERE ${entityNumbers[entityTypes.indexOf(entity.entityType)]} = ${
+            entity.entityId
+          }`
+        );
+      }
+      if (result.rowCount === 0) {
+        entityIdErros.push(
+          `A entityId = ${entity.entityId} não foi encontrada e portanto suas tags não foram incluídas`
+        );
+      } else {
+        for (const tag of entity.tag) {
+          const result = await pool.query(
+            `INSERT INTO tagstable (entityid, tagid, tagname, tagvalue) VALUES ('${entity.entityId}', ${tag.id}, '${tag.name}', '${tag.value}') ON CONFLICT (entityid, tagid) DO NOTHING;`
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  console.log(entityIdErros);
+  if (entityIdErros.length > 0) {
+    res.status(207).send({
+      message:
+        "Multi-Status: Algumas Tags foram incluidas, porem alguns erros ocorreram",
+      errors: entityIdErros,
+    });
+  } else {
+    res.status(204).send("Sucess: tag(s) atualizad(s).");
+  }
+
+  entityIdErros = [];
 };
 
 const putByTag = async (req, res) => {

@@ -8,9 +8,3 @@ CREATE TABLE "public"."tagstable" (
     "tagvalue" varchar(50) NOT NULL,
     CONSTRAINT "entitytags_pkey" PRIMARY KEY ("entityid", "tagid")
 ) WITH (oids = false);
-
-INSERT INTO "tagstable" ("entityid", "tagid", "tagname", "tagvalue") VALUES
-('2004', 1,	'level',    'easy'),
-('2006', 1,	'lang',     'relax'),
-('2004', 2,   'lang',     'mysql'),
-('11', 3, 'lang',     'relax')
