@@ -16,10 +16,10 @@ app.get('/', (req, res) => {
 
 
 // Rotas
-app.get('/tag/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+|[^/]+)/:entityId', db.getByTag);
-app.post('/tag/api/contest/:contestId/tags', db.postByTag);
-app.put('/tag/api/contest/:contestId/tags', db.putByTag);
-app.delete('/tag/api/contest/:contestId/tags', db.deleteByTag);
+app.get('/api/contest/:contestId/tags/:entityType([a-zA-Z0-9]+\/[a-zA-Z0-9]+|[^/]+)/:entityId', db.getByTag);
+app.post('/api/contest/:contestId/tags', db.postByTag);
+app.put('/api/contest/:contestId/tags', db.putByTag);
+app.delete('/api/contest/:contestId/tags', db.deleteByTag);
 
 
 app.listen(PORT, HOST, () => {
