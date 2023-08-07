@@ -18,7 +18,7 @@ Você pode adicionar as seguintes consultas à URL para filtrar as tags:
 -  `tagName`: Filtra pelo nome da tag.
 -  `tagValue`: Filtra pelo valor da tag.
 
-### POST `/tag/api/contest/:contestId/tags`
+### POST `/api/contest/:contestId/tags`
 Este endpoint permite adicionar novas tags para as entidades na competição.
 
 #### Corpo da Requisição
@@ -55,7 +55,7 @@ Este endpoint permite adicionar novas tags para as entidades na competição.
   ]
 }
 ```
-### PUT /tag/api/contest/:contestId/tags
+### PUT /api/contest/:contestId/tags
 
 Este endpoint permite atualizar as tags existentes para as entidades na competição.
 
@@ -83,7 +83,7 @@ Este endpoint permite atualizar as tags existentes para as entidades na competi�
 }
 ```
 
-### DELETE `/tag/api/contest/:contestId/tags`
+### DELETE `/api/contest/:contestId/tags`
 Este endpoint permite excluir as tags associadas às entidades na competição.
 
 #### Corpo da Requisição
