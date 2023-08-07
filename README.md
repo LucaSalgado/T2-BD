@@ -4,7 +4,7 @@ Esta é uma API para gerenciar tags associadas a diferentes entidades em uma com
 
 ## Endpoints
 
-### GET `/tag/api/contest/:contestId/tags/:entityType/:entityId`
+### GET `/api/contest/:contestId/tags/:entityType/:entityId`
 Este endpoint retorna as tags associadas à entidade especificada na competição.
 
 #### Parâmetros
